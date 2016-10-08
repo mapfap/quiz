@@ -1,0 +1,613 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ErgoQuizModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Event">
+          <Key>
+            <PropertyRef Name="EventID" />
+          </Key>
+          <Property Name="EventID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EventTypeID" Type="int" Nullable="false" />
+          <Property Name="Value" Type="nvarchar(max)" />
+          <Property Name="At" Type="datetime" />
+        </EntityType>
+        <EntityType Name="EventType">
+          <Key>
+            <PropertyRef Name="EventTypeID" />
+          </Key>
+          <Property Name="EventTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="200" />
+        </EntityType>
+        <EntityType Name="Game">
+          <Key>
+            <PropertyRef Name="GameID" />
+          </Key>
+          <Property Name="GameID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PlayerID" Type="int" Nullable="false" />
+          <Property Name="QuestionSetID" Type="int" Nullable="false" />
+          <Property Name="IsGameEnded" Type="bit" Nullable="false" />
+          <Property Name="TotalTimeUsed" Type="bigint" Nullable="false" />
+          <Property Name="ActualTimeUsed" Type="bigint" Nullable="false" />
+          <Property Name="GameSequence" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="TotalScore" Type="int" />
+          <Property Name="MaxConsecutiveScore" Type="int" />
+          <Property Name="MostRecentEndedQuestionID" Type="int" />
+        </EntityType>
+        <EntityType Name="GameLog">
+          <Key>
+            <PropertyRef Name="GameID" />
+            <PropertyRef Name="QuestionID" />
+          </Key>
+          <Property Name="GameID" Type="int" Nullable="false" />
+          <Property Name="QuestionID" Type="int" Nullable="false" />
+          <Property Name="GameSequenceAt" Type="int" Nullable="false" />
+          <Property Name="TotalTimeUsed" Type="bigint" Nullable="false" />
+          <Property Name="ActualTimeUsed" Type="bigint" Nullable="false" />
+          <Property Name="At" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Player">
+          <Key>
+            <PropertyRef Name="PlayerID" />
+          </Key>
+          <Property Name="PlayerID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LanId" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Question">
+          <Key>
+            <PropertyRef Name="QuestionID" />
+          </Key>
+          <Property Name="QuestionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="QuestionSetID" Type="int" Nullable="false" />
+          <Property Name="Picture" Type="nvarchar" MaxLength="200" />
+          <Property Name="Choice1" Type="nvarchar" MaxLength="1000" Nullable="false" />
+          <Property Name="Choice2" Type="nvarchar" MaxLength="1000" Nullable="false" />
+          <Property Name="Choice3" Type="nvarchar" MaxLength="1000" Nullable="false" />
+          <Property Name="Choice4" Type="nvarchar" MaxLength="1000" Nullable="false" />
+          <Property Name="Answer" Type="smallint" Nullable="false" />
+          <Property Name="TITLE" Type="nvarchar" MaxLength="1000" Nullable="false" />
+        </EntityType>
+        <EntityType Name="QuestionSet">
+          <Key>
+            <PropertyRef Name="QuestionSetID" />
+          </Key>
+          <Property Name="QuestionSetID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Session">
+          <Key>
+            <PropertyRef Name="SessionID" />
+          </Key>
+          <Property Name="SessionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GameID" Type="int" Nullable="false" />
+          <Property Name="QuestionID" Type="int" Nullable="false" />
+          <Property Name="TimeLeftBeforeAsk" Type="bigint" />
+          <Property Name="AskAt" Type="datetime" Nullable="false" />
+          <Property Name="Answer" Type="int" />
+          <Property Name="IsAnsered" Type="bit" />
+          <Property Name="isCorrect" Type="bit" />
+          <Property Name="TimeLeftAfterAnswer" Type="bigint" />
+          <Property Name="AnswerAt" Type="datetime" />
+          <Property Name="GameSequenceAt" Type="int" Nullable="false" />
+          <Property Name="TotalTimeUsed" Type="bigint" Nullable="false" />
+          <Property Name="ActualTimeUsed" Type="bigint" Nullable="false" />
+          <Property Name="IsSkipped" Type="bit" />
+          <Property Name="SkippedAt" Type="datetime" />
+        </EntityType>
+        <Association Name="FK_Event_EventType">
+          <End Role="EventType" Type="Self.EventType" Multiplicity="1" />
+          <End Role="Event" Type="Self.Event" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EventType">
+              <PropertyRef Name="EventTypeID" />
+            </Principal>
+            <Dependent Role="Event">
+              <PropertyRef Name="EventTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Game_Player">
+          <End Role="Player" Type="Self.Player" Multiplicity="1" />
+          <End Role="Game" Type="Self.Game" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Player">
+              <PropertyRef Name="PlayerID" />
+            </Principal>
+            <Dependent Role="Game">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Game_QuestionSet">
+          <End Role="QuestionSet" Type="Self.QuestionSet" Multiplicity="1" />
+          <End Role="Game" Type="Self.Game" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="QuestionSet">
+              <PropertyRef Name="QuestionSetID" />
+            </Principal>
+            <Dependent Role="Game">
+              <PropertyRef Name="QuestionSetID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GameLog_Game">
+          <End Role="Game" Type="Self.Game" Multiplicity="1" />
+          <End Role="GameLog" Type="Self.GameLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Game">
+              <PropertyRef Name="GameID" />
+            </Principal>
+            <Dependent Role="GameLog">
+              <PropertyRef Name="GameID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GameLog_QuestionID">
+          <End Role="Question" Type="Self.Question" Multiplicity="1" />
+          <End Role="GameLog" Type="Self.GameLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Question">
+              <PropertyRef Name="QuestionID" />
+            </Principal>
+            <Dependent Role="GameLog">
+              <PropertyRef Name="QuestionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Question_QuestionSet">
+          <End Role="QuestionSet" Type="Self.QuestionSet" Multiplicity="1" />
+          <End Role="Question" Type="Self.Question" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="QuestionSet">
+              <PropertyRef Name="QuestionSetID" />
+            </Principal>
+            <Dependent Role="Question">
+              <PropertyRef Name="QuestionSetID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Session_Game">
+          <End Role="Game" Type="Self.Game" Multiplicity="1" />
+          <End Role="Session" Type="Self.Session" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Game">
+              <PropertyRef Name="GameID" />
+            </Principal>
+            <Dependent Role="Session">
+              <PropertyRef Name="GameID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Session_Question">
+          <End Role="Question" Type="Self.Question" Multiplicity="1" />
+          <End Role="Session" Type="Self.Session" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Question">
+              <PropertyRef Name="QuestionID" />
+            </Principal>
+            <Dependent Role="Session">
+              <PropertyRef Name="QuestionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ErgoQuizModelStoreContainer">
+          <EntitySet Name="Event" EntityType="Self.Event" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EventType" EntityType="Self.EventType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Game" EntityType="Self.Game" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GameLog" EntityType="Self.GameLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Player" EntityType="Self.Player" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Question" EntityType="Self.Question" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="QuestionSet" EntityType="Self.QuestionSet" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Session" EntityType="Self.Session" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Event_EventType" Association="Self.FK_Event_EventType">
+            <End Role="EventType" EntitySet="EventType" />
+            <End Role="Event" EntitySet="Event" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Game_Player" Association="Self.FK_Game_Player">
+            <End Role="Player" EntitySet="Player" />
+            <End Role="Game" EntitySet="Game" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Game_QuestionSet" Association="Self.FK_Game_QuestionSet">
+            <End Role="QuestionSet" EntitySet="QuestionSet" />
+            <End Role="Game" EntitySet="Game" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GameLog_Game" Association="Self.FK_GameLog_Game">
+            <End Role="Game" EntitySet="Game" />
+            <End Role="GameLog" EntitySet="GameLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GameLog_QuestionID" Association="Self.FK_GameLog_QuestionID">
+            <End Role="Question" EntitySet="Question" />
+            <End Role="GameLog" EntitySet="GameLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Question_QuestionSet" Association="Self.FK_Question_QuestionSet">
+            <End Role="QuestionSet" EntitySet="QuestionSet" />
+            <End Role="Question" EntitySet="Question" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Session_Game" Association="Self.FK_Session_Game">
+            <End Role="Game" EntitySet="Game" />
+            <End Role="Session" EntitySet="Session" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Session_Question" Association="Self.FK_Session_Question">
+            <End Role="Question" EntitySet="Question" />
+            <End Role="Session" EntitySet="Session" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ErgoQuizModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="ErgoQuizEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Event" EntityType="ErgoQuizModel.Event" />
+          <EntitySet Name="EventType" EntityType="ErgoQuizModel.EventType" />
+          <EntitySet Name="Game" EntityType="ErgoQuizModel.Game" />
+          <EntitySet Name="GameLog" EntityType="ErgoQuizModel.GameLog" />
+          <EntitySet Name="Player" EntityType="ErgoQuizModel.Player" />
+          <EntitySet Name="Question" EntityType="ErgoQuizModel.Question" />
+          <EntitySet Name="QuestionSet" EntityType="ErgoQuizModel.QuestionSet" />
+          <EntitySet Name="Session" EntityType="ErgoQuizModel.Session" />
+          <AssociationSet Name="FK_Event_EventType" Association="ErgoQuizModel.FK_Event_EventType">
+            <End Role="EventType" EntitySet="EventType" />
+            <End Role="Event" EntitySet="Event" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Game_Player" Association="ErgoQuizModel.FK_Game_Player">
+            <End Role="Player" EntitySet="Player" />
+            <End Role="Game" EntitySet="Game" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Game_QuestionSet" Association="ErgoQuizModel.FK_Game_QuestionSet">
+            <End Role="QuestionSet" EntitySet="QuestionSet" />
+            <End Role="Game" EntitySet="Game" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GameLog_Game" Association="ErgoQuizModel.FK_GameLog_Game">
+            <End Role="Game" EntitySet="Game" />
+            <End Role="GameLog" EntitySet="GameLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Session_Game" Association="ErgoQuizModel.FK_Session_Game">
+            <End Role="Game" EntitySet="Game" />
+            <End Role="Session" EntitySet="Session" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GameLog_QuestionID" Association="ErgoQuizModel.FK_GameLog_QuestionID">
+            <End Role="Question" EntitySet="Question" />
+            <End Role="GameLog" EntitySet="GameLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Question_QuestionSet" Association="ErgoQuizModel.FK_Question_QuestionSet">
+            <End Role="QuestionSet" EntitySet="QuestionSet" />
+            <End Role="Question" EntitySet="Question" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Session_Question" Association="ErgoQuizModel.FK_Session_Question">
+            <End Role="Question" EntitySet="Question" />
+            <End Role="Session" EntitySet="Session" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Event">
+          <Key>
+            <PropertyRef Name="EventID" />
+          </Key>
+          <Property Name="EventID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EventTypeID" Type="Int32" Nullable="false" />
+          <Property Name="Value" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="At" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="EventType" Relationship="ErgoQuizModel.FK_Event_EventType" FromRole="Event" ToRole="EventType" />
+        </EntityType>
+        <EntityType Name="EventType">
+          <Key>
+            <PropertyRef Name="EventTypeID" />
+          </Key>
+          <Property Name="EventTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Event" Relationship="ErgoQuizModel.FK_Event_EventType" FromRole="EventType" ToRole="Event" />
+        </EntityType>
+        <EntityType Name="Game">
+          <Key>
+            <PropertyRef Name="GameID" />
+          </Key>
+          <Property Name="GameID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PlayerID" Type="Int32" Nullable="false" />
+          <Property Name="QuestionSetID" Type="Int32" Nullable="false" />
+          <Property Name="IsGameEnded" Type="Boolean" Nullable="false" />
+          <Property Name="TotalTimeUsed" Type="Int64" Nullable="false" />
+          <Property Name="ActualTimeUsed" Type="Int64" Nullable="false" />
+          <Property Name="GameSequence" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="TotalScore" Type="Int32" />
+          <Property Name="MaxConsecutiveScore" Type="Int32" />
+          <Property Name="MostRecentEndedQuestionID" Type="Int32" />
+          <NavigationProperty Name="Player" Relationship="ErgoQuizModel.FK_Game_Player" FromRole="Game" ToRole="Player" />
+          <NavigationProperty Name="QuestionSet" Relationship="ErgoQuizModel.FK_Game_QuestionSet" FromRole="Game" ToRole="QuestionSet" />
+          <NavigationProperty Name="GameLog" Relationship="ErgoQuizModel.FK_GameLog_Game" FromRole="Game" ToRole="GameLog" />
+          <NavigationProperty Name="Session" Relationship="ErgoQuizModel.FK_Session_Game" FromRole="Game" ToRole="Session" />
+        </EntityType>
+        <EntityType Name="GameLog">
+          <Key>
+            <PropertyRef Name="GameID" />
+            <PropertyRef Name="QuestionID" />
+          </Key>
+          <Property Name="GameID" Type="Int32" Nullable="false" />
+          <Property Name="QuestionID" Type="Int32" Nullable="false" />
+          <Property Name="GameSequenceAt" Type="Int32" Nullable="false" />
+          <Property Name="TotalTimeUsed" Type="Int64" Nullable="false" />
+          <Property Name="ActualTimeUsed" Type="Int64" Nullable="false" />
+          <Property Name="At" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Game" Relationship="ErgoQuizModel.FK_GameLog_Game" FromRole="GameLog" ToRole="Game" />
+          <NavigationProperty Name="Question" Relationship="ErgoQuizModel.FK_GameLog_QuestionID" FromRole="GameLog" ToRole="Question" />
+        </EntityType>
+        <EntityType Name="Player">
+          <Key>
+            <PropertyRef Name="PlayerID" />
+          </Key>
+          <Property Name="PlayerID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LanId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Game" Relationship="ErgoQuizModel.FK_Game_Player" FromRole="Player" ToRole="Game" />
+        </EntityType>
+        <EntityType Name="Question">
+          <Key>
+            <PropertyRef Name="QuestionID" />
+          </Key>
+          <Property Name="QuestionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="QuestionSetID" Type="Int32" Nullable="false" />
+          <Property Name="Picture" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Choice1" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="Choice2" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="Choice3" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="Choice4" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="Answer" Type="Int16" Nullable="false" />
+          <Property Name="TITLE" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="GameLog" Relationship="ErgoQuizModel.FK_GameLog_QuestionID" FromRole="Question" ToRole="GameLog" />
+          <NavigationProperty Name="QuestionSet" Relationship="ErgoQuizModel.FK_Question_QuestionSet" FromRole="Question" ToRole="QuestionSet" />
+          <NavigationProperty Name="Session" Relationship="ErgoQuizModel.FK_Session_Question" FromRole="Question" ToRole="Session" />
+        </EntityType>
+        <EntityType Name="QuestionSet">
+          <Key>
+            <PropertyRef Name="QuestionSetID" />
+          </Key>
+          <Property Name="QuestionSetID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Game" Relationship="ErgoQuizModel.FK_Game_QuestionSet" FromRole="QuestionSet" ToRole="Game" />
+          <NavigationProperty Name="Question" Relationship="ErgoQuizModel.FK_Question_QuestionSet" FromRole="QuestionSet" ToRole="Question" />
+        </EntityType>
+        <EntityType Name="Session">
+          <Key>
+            <PropertyRef Name="SessionID" />
+          </Key>
+          <Property Name="SessionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GameID" Type="Int32" Nullable="false" />
+          <Property Name="QuestionID" Type="Int32" Nullable="false" />
+          <Property Name="TimeLeftBeforeAsk" Type="Int64" />
+          <Property Name="AskAt" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Answer" Type="Int32" />
+          <Property Name="IsAnsered" Type="Boolean" />
+          <Property Name="isCorrect" Type="Boolean" />
+          <Property Name="TimeLeftAfterAnswer" Type="Int64" />
+          <Property Name="AnswerAt" Type="DateTime" Precision="3" />
+          <Property Name="GameSequenceAt" Type="Int32" Nullable="false" />
+          <Property Name="TotalTimeUsed" Type="Int64" Nullable="false" />
+          <Property Name="ActualTimeUsed" Type="Int64" Nullable="false" />
+          <Property Name="IsSkipped" Type="Boolean" />
+          <Property Name="SkippedAt" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Game" Relationship="ErgoQuizModel.FK_Session_Game" FromRole="Session" ToRole="Game" />
+          <NavigationProperty Name="Question" Relationship="ErgoQuizModel.FK_Session_Question" FromRole="Session" ToRole="Question" />
+        </EntityType>
+        <Association Name="FK_Event_EventType">
+          <End Type="ErgoQuizModel.EventType" Role="EventType" Multiplicity="1" />
+          <End Type="ErgoQuizModel.Event" Role="Event" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EventType">
+              <PropertyRef Name="EventTypeID" />
+            </Principal>
+            <Dependent Role="Event">
+              <PropertyRef Name="EventTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Game_Player">
+          <End Type="ErgoQuizModel.Player" Role="Player" Multiplicity="1" />
+          <End Type="ErgoQuizModel.Game" Role="Game" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Player">
+              <PropertyRef Name="PlayerID" />
+            </Principal>
+            <Dependent Role="Game">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Game_QuestionSet">
+          <End Type="ErgoQuizModel.QuestionSet" Role="QuestionSet" Multiplicity="1" />
+          <End Type="ErgoQuizModel.Game" Role="Game" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="QuestionSet">
+              <PropertyRef Name="QuestionSetID" />
+            </Principal>
+            <Dependent Role="Game">
+              <PropertyRef Name="QuestionSetID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GameLog_Game">
+          <End Type="ErgoQuizModel.Game" Role="Game" Multiplicity="1" />
+          <End Type="ErgoQuizModel.GameLog" Role="GameLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Game">
+              <PropertyRef Name="GameID" />
+            </Principal>
+            <Dependent Role="GameLog">
+              <PropertyRef Name="GameID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Session_Game">
+          <End Type="ErgoQuizModel.Game" Role="Game" Multiplicity="1" />
+          <End Type="ErgoQuizModel.Session" Role="Session" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Game">
+              <PropertyRef Name="GameID" />
+            </Principal>
+            <Dependent Role="Session">
+              <PropertyRef Name="GameID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GameLog_QuestionID">
+          <End Type="ErgoQuizModel.Question" Role="Question" Multiplicity="1" />
+          <End Type="ErgoQuizModel.GameLog" Role="GameLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Question">
+              <PropertyRef Name="QuestionID" />
+            </Principal>
+            <Dependent Role="GameLog">
+              <PropertyRef Name="QuestionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Question_QuestionSet">
+          <End Type="ErgoQuizModel.QuestionSet" Role="QuestionSet" Multiplicity="1" />
+          <End Type="ErgoQuizModel.Question" Role="Question" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="QuestionSet">
+              <PropertyRef Name="QuestionSetID" />
+            </Principal>
+            <Dependent Role="Question">
+              <PropertyRef Name="QuestionSetID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Session_Question">
+          <End Type="ErgoQuizModel.Question" Role="Question" Multiplicity="1" />
+          <End Type="ErgoQuizModel.Session" Role="Session" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Question">
+              <PropertyRef Name="QuestionID" />
+            </Principal>
+            <Dependent Role="Session">
+              <PropertyRef Name="QuestionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ErgoQuizModelStoreContainer" CdmEntityContainer="ErgoQuizEntities">
+          <EntitySetMapping Name="Event">
+            <EntityTypeMapping TypeName="ErgoQuizModel.Event">
+              <MappingFragment StoreEntitySet="Event">
+                <ScalarProperty Name="At" ColumnName="At" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="EventTypeID" ColumnName="EventTypeID" />
+                <ScalarProperty Name="EventID" ColumnName="EventID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EventType">
+            <EntityTypeMapping TypeName="ErgoQuizModel.EventType">
+              <MappingFragment StoreEntitySet="EventType">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="EventTypeID" ColumnName="EventTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Game">
+            <EntityTypeMapping TypeName="ErgoQuizModel.Game">
+              <MappingFragment StoreEntitySet="Game">
+                <ScalarProperty Name="MostRecentEndedQuestionID" ColumnName="MostRecentEndedQuestionID" />
+                <ScalarProperty Name="MaxConsecutiveScore" ColumnName="MaxConsecutiveScore" />
+                <ScalarProperty Name="TotalScore" ColumnName="TotalScore" />
+                <ScalarProperty Name="GameSequence" ColumnName="GameSequence" />
+                <ScalarProperty Name="ActualTimeUsed" ColumnName="ActualTimeUsed" />
+                <ScalarProperty Name="TotalTimeUsed" ColumnName="TotalTimeUsed" />
+                <ScalarProperty Name="IsGameEnded" ColumnName="IsGameEnded" />
+                <ScalarProperty Name="QuestionSetID" ColumnName="QuestionSetID" />
+                <ScalarProperty Name="PlayerID" ColumnName="PlayerID" />
+                <ScalarProperty Name="GameID" ColumnName="GameID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GameLog">
+            <EntityTypeMapping TypeName="ErgoQuizModel.GameLog">
+              <MappingFragment StoreEntitySet="GameLog">
+                <ScalarProperty Name="At" ColumnName="At" />
+                <ScalarProperty Name="ActualTimeUsed" ColumnName="ActualTimeUsed" />
+                <ScalarProperty Name="TotalTimeUsed" ColumnName="TotalTimeUsed" />
+                <ScalarProperty Name="GameSequenceAt" ColumnName="GameSequenceAt" />
+                <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />
+                <ScalarProperty Name="GameID" ColumnName="GameID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Player">
+            <EntityTypeMapping TypeName="ErgoQuizModel.Player">
+              <MappingFragment StoreEntitySet="Player">
+                <ScalarProperty Name="LanId" ColumnName="LanId" />
+                <ScalarProperty Name="PlayerID" ColumnName="PlayerID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Question">
+            <EntityTypeMapping TypeName="ErgoQuizModel.Question">
+              <MappingFragment StoreEntitySet="Question">
+                <ScalarProperty Name="TITLE" ColumnName="TITLE" />
+                <ScalarProperty Name="Answer" ColumnName="Answer" />
+                <ScalarProperty Name="Choice4" ColumnName="Choice4" />
+                <ScalarProperty Name="Choice3" ColumnName="Choice3" />
+                <ScalarProperty Name="Choice2" ColumnName="Choice2" />
+                <ScalarProperty Name="Choice1" ColumnName="Choice1" />
+                <ScalarProperty Name="Picture" ColumnName="Picture" />
+                <ScalarProperty Name="QuestionSetID" ColumnName="QuestionSetID" />
+                <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="QuestionSet">
+            <EntityTypeMapping TypeName="ErgoQuizModel.QuestionSet">
+              <MappingFragment StoreEntitySet="QuestionSet">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="QuestionSetID" ColumnName="QuestionSetID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Session">
+            <EntityTypeMapping TypeName="ErgoQuizModel.Session">
+              <MappingFragment StoreEntitySet="Session">
+                <ScalarProperty Name="SkippedAt" ColumnName="SkippedAt" />
+                <ScalarProperty Name="IsSkipped" ColumnName="IsSkipped" />
+                <ScalarProperty Name="ActualTimeUsed" ColumnName="ActualTimeUsed" />
+                <ScalarProperty Name="TotalTimeUsed" ColumnName="TotalTimeUsed" />
+                <ScalarProperty Name="GameSequenceAt" ColumnName="GameSequenceAt" />
+                <ScalarProperty Name="AnswerAt" ColumnName="AnswerAt" />
+                <ScalarProperty Name="TimeLeftAfterAnswer" ColumnName="TimeLeftAfterAnswer" />
+                <ScalarProperty Name="isCorrect" ColumnName="isCorrect" />
+                <ScalarProperty Name="IsAnsered" ColumnName="IsAnsered" />
+                <ScalarProperty Name="Answer" ColumnName="Answer" />
+                <ScalarProperty Name="AskAt" ColumnName="AskAt" />
+                <ScalarProperty Name="TimeLeftBeforeAsk" ColumnName="TimeLeftBeforeAsk" />
+                <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />
+                <ScalarProperty Name="GameID" ColumnName="GameID" />
+                <ScalarProperty Name="SessionID" ColumnName="SessionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

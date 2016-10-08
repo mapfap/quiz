@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="7626c5e53ccc494291eace258eb301d7" Name="Diagram1" ZoomLevel="60">
+        <EntityTypeShape EntityType="ErgoQuizModel.Event" Width="1.5" PointX="5" PointY="0.875" />
+        <EntityTypeShape EntityType="ErgoQuizModel.EventType" Width="1.5" PointX="2.75" PointY="1.125" />
+        <EntityTypeShape EntityType="ErgoQuizModel.Game" Width="1.5" PointX="3" PointY="5.375" />
+        <EntityTypeShape EntityType="ErgoQuizModel.GameLog" Width="1.5" PointX="8.25" PointY="8.125" />
+        <EntityTypeShape EntityType="ErgoQuizModel.Player" Width="1.5" PointX="0.75" PointY="3.5" />
+        <EntityTypeShape EntityType="ErgoQuizModel.Question" Width="1.5" PointX="3" PointY="10" />
+        <EntityTypeShape EntityType="ErgoQuizModel.QuestionSet" Width="1.5" PointX="0.75" PointY="6.375" />
+        <EntityTypeShape EntityType="ErgoQuizModel.Session" Width="1.5" PointX="5.25" PointY="7.25" />
+        <AssociationConnector Association="ErgoQuizModel.FK_Event_EventType" />
+        <AssociationConnector Association="ErgoQuizModel.FK_Game_Player" />
+        <AssociationConnector Association="ErgoQuizModel.FK_Game_QuestionSet" />
+        <AssociationConnector Association="ErgoQuizModel.FK_GameLog_Game" />
+        <AssociationConnector Association="ErgoQuizModel.FK_Session_Game" />
+        <AssociationConnector Association="ErgoQuizModel.FK_GameLog_QuestionID" />
+        <AssociationConnector Association="ErgoQuizModel.FK_Question_QuestionSet" />
+        <AssociationConnector Association="ErgoQuizModel.FK_Session_Question" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
