@@ -34,7 +34,7 @@ namespace ErgoQuizAPI.Controllers
             if (lanID == null)
             {
                 EventLogger.Log(EventCode.LOGIN_FAIL, "/hello");
-                return "Fail to login, Try Internet Explorer.";
+                return "{\"ResponseCode\":\"" + ResponseCode.ERROR + "\", \"Message\":\"Fail to login. Try again using Internet Explorer.\"}";
             }
 
             Player player = Gaming.RetrievePlayer(lanID);
@@ -45,17 +45,17 @@ namespace ErgoQuizAPI.Controllers
             if (isNewGame)
             {
                 EventLogger.Log(EventCode.LOGIN_FIRST_TIME, game.GameID + "");
-                return "Hello Sarun, Welcome to Ergo Q4. The Rules is... You have" + QUIZ_TIME;
+                return "{\"ResponseCode\":\"" + ResponseCode.GREETING + "\", \"TimeLeft\":" + QUIZ_TIME + "}";
             }
             else if (game.IsGameEnded)
             {
                 EventLogger.Log(EventCode.LOGIN_SCORE, game.GameID + "");
-                return "Thanks for playing, your score is";
+                return "{\"ResponseCode\":\"" + ResponseCode.SCOREBOARD + "\", \"TotalScore\":" + game.TotalScore + "}";
             } 
             else 
             {
                 EventLogger.Log(EventCode.LOGIN_RETURNING, game.GameID + "");
-                return "Welcome Back, Your score is now, and have 30 left!";
+                return "{\"ResponseCode\":\"" + ResponseCode.WELCOME_BACK + "\", \"TimeLeft\":" + (QUIZ_TIME - game.TotalTimeUsed) + "}";
             }
         }
 
@@ -66,14 +66,14 @@ namespace ErgoQuizAPI.Controllers
         {
             if (timeLeft == null)
             {
-                return "400 Bad Request";
+                return "{\"ResponseCode\":\"" + ResponseCode.ERROR + "\", \"Message\":\"Missing 'timeLeft.'\"}";
             }
 
             string lanID = Authenticator.GetLanID();
             if (lanID == null)
             {
                 EventLogger.Log(EventCode.LOGIN_FAIL, "/ready");
-                return "Fail to login, Try Internet Explorer.";
+                return "{\"ResponseCode\":\"" + ResponseCode.ERROR + "\", \"Message\":\"Fail to login. Try again using Internet Explorer.\"}";
             }
 
             Player player = Gaming.RetrievePlayer(lanID);
@@ -84,7 +84,7 @@ namespace ErgoQuizAPI.Controllers
             if (game.IsGameEnded)
             {
                 // Users are not supposed to reach this code..
-                return "Game is ended.";
+                return "{\"ResponseCode\":\"" + ResponseCode.GAMEOVER + "\", \"Message\":\"TIME OUT !\"}";
             }
             else
             {
@@ -96,7 +96,7 @@ namespace ErgoQuizAPI.Controllers
                 {
                     EventLogger.Log(EventCode.READY_NO_QUESTION, game.GameID + "");
                     Gaming.EndTheGame(game);
-                    return "{\"Status\":\"NO_MORE_QUESTION\"}";
+                    return "{\"ResponseCode\":\"" + ResponseCode.GAMEOVER + "\", \"Message\":\"You answered all question.\"}";
                 }
                 
                 // TODO: Total time too much? time stamp mistmatch ? 
@@ -111,8 +111,8 @@ namespace ErgoQuizAPI.Controllers
                 Question question = Gaming.GetQuestion(session);
 
                 string json = "{";
-                json += "\"Status\": \"OK\""; 
-                json += ",\"ID\": " + question.QuestionID;
+                json += "\"ResponseCode\": \"" + ResponseCode.QUESTION + "\""; 
+                json += ",\"QuestionID\": " + question.QuestionID;
                 json += ",\"Title\": \"" + question.TITLE + "\"";
                 json += ",\"Picture\": \"" + question.Picture + "\"";
                 json += ",\"Choice1\": \"" + question.Choice1 + "\"";
@@ -132,14 +132,14 @@ namespace ErgoQuizAPI.Controllers
         {
             if (questionID == null || answer == null ||timeLeft == null)
             {
-                return "400 Bad Request";
+                return "{\"ResponseCode\":\"" + ResponseCode.ERROR + "\", \"Message\":\"Missing 'timeLeft or answer or questionID.'\"}";
             }
 
             string lanID = Authenticator.GetLanID();
             if (lanID == null)
             {
                 EventLogger.Log(EventCode.LOGIN_FAIL, "/answer");
-                return "Fail to login, Try Internet Explorer.";
+                return "{\"ResponseCode\":\"" + ResponseCode.ERROR + "\", \"Message\":\"Fail to login. Try again using Internet Explorer.\"}";
             }
 
             Player player = Gaming.RetrievePlayer(lanID);
@@ -150,7 +150,7 @@ namespace ErgoQuizAPI.Controllers
             if (game.IsGameEnded)
             {
                 // Users are not supposed to reach this code..
-                return "Game is ended.";
+                return "{\"ResponseCode\":\"" + ResponseCode.GAMEOVER + "\", \"Message\":\"Game is ended !\"}";
             }
 
             Session session = Gaming.GetCurrentSessionForAnswer(game);
@@ -160,14 +160,14 @@ namespace ErgoQuizAPI.Controllers
             {
                 // Users are not supposed to reach this code..
                 EventLogger.Log(EventCode.ANSWER_NO_SESSION, game.GameID + "");
-                return "[Anomaly Detected]";
+                return "{\"ResponseCode\":\"" + ResponseCode.ERROR + "\", \"Message\":\"Anomaly detected\"}";
             }
 
             // Answer to wrong question
             if (session.QuestionID != questionID)
             {
                 EventLogger.Log(EventCode.ANSWER_QID_MISMATCH, session.SessionID + "," + questionID);
-                return "[Anomaly Detected]";
+                return "{\"ResponseCode\":\"" + ResponseCode.ERROR + "\", \"Message\":\"Anomaly detected\"}";
             }
 
             if (timeLeft <= 0)
@@ -175,7 +175,7 @@ namespace ErgoQuizAPI.Controllers
                 EventLogger.Log(EventCode.ANSWER_TIMEOUT, session.SessionID + "");
                 Gaming.EndTheGame(game);
                 // Redirect user go to main page again? 
-                return "{\"Status\":\"TIMEOUT\"}";
+                return "{\"ResponseCode\":\"" + ResponseCode.GAMEOVER + "\", \"Message\":\"TIME OUT !\"}";
             }
 
 
@@ -189,11 +189,11 @@ namespace ErgoQuizAPI.Controllers
             if (isCorrect)
             {
                 EventLogger.Log(EventCode.ANSWER_CORRECT, session.SessionID + "");
-                return "{\"Status\":\"Correct\"}";
+                return "{\"ResponseCode\":\"" + ResponseCode.CORRECT + "\", \"Message\":\"\"}";
             } else
             {
                 EventLogger.Log(EventCode.ANSWER_INCORRECT, session.SessionID + "");
-                return "{\"Status\":\"Incorrect\"}";
+                return "{\"ResponseCode\":\"" + ResponseCode.INCORRECT + "\", \"Message\":\"\"}";
             }
             
         }

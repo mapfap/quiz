@@ -48,7 +48,8 @@ namespace ErgoQuizAPI.Helper
                         GameSequence = sequence,
                         MostRecentEndedQuestionID = 0,
                         TotalScore = 0,
-                        MaxConsecutiveScore = 0
+                        MaxConsecutiveScore = 0,
+                        ConsecutiveScore = 0
                     };
                     db.Game.Add(game);
                     db.SaveChanges();
@@ -213,7 +214,13 @@ namespace ErgoQuizAPI.Helper
             // Time reported by user
             long totalMsUsed = (long)session.TimeLeftBeforeAsk - timeLeft;
 
-            int key = (int)session.Question.Answer;
+            Question question;
+            using(var db = new ErgoQuizEntities())
+            {
+                question = db.Question.Find(session.QuestionID);
+            }
+
+            int key = (int) question.Answer;
             bool isCorrect = key == answer;
 
             using (var db = new ErgoQuizEntities())
@@ -245,12 +252,15 @@ namespace ErgoQuizAPI.Helper
                 if (isCorrect)
                 {
                     game.TotalScore += 1;
-                    game.MaxConsecutiveScore += 1;
+                    game.ConsecutiveScore += 1;
+                    if (game.ConsecutiveScore > game.MaxConsecutiveScore)
+                    {
+                        game.MaxConsecutiveScore = game.ConsecutiveScore;
+                    }
                 }
                 else
                 {
-                    game.TotalScore += 0;
-                    game.MaxConsecutiveScore = 0;
+                    game.ConsecutiveScore = 0;
                 }
 
                 db.Game.Attach(game);
@@ -259,6 +269,7 @@ namespace ErgoQuizAPI.Helper
                 db.Entry(game).Property(g => g.TotalTimeUsed).IsModified = true;
                 db.Entry(game).Property(g => g.ActualTimeUsed).IsModified = true;
                 db.Entry(game).Property(g => g.TotalScore).IsModified = true;
+                db.Entry(game).Property(g => g.ConsecutiveScore).IsModified = true;
                 db.Entry(game).Property(g => g.MaxConsecutiveScore).IsModified = true;
 
                 db.SaveChanges();

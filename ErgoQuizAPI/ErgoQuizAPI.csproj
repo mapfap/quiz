@@ -110,7 +110,9 @@
       <DependentUpon>Model.edmx</DependentUpon>
       <LastGenOutput>Model.cs</LastGenOutput>
     </Content>
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -134,6 +136,7 @@
     <Compile Include="Helper\EventLogger.cs" />
     <Compile Include="Helper\EventCode.cs" />
     <Compile Include="Helper\Gaming.cs" />
+    <Compile Include="Helper\ResponseCode.cs" />
     <Compile Include="Model.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

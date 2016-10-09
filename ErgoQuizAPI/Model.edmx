@@ -35,6 +35,7 @@
           <Property Name="TotalScore" Type="int" />
           <Property Name="MaxConsecutiveScore" Type="int" />
           <Property Name="MostRecentEndedQuestionID" Type="int" />
+          <Property Name="ConsecutiveScore" Type="int" />
         </EntityType>
         <EntityType Name="GameLog">
           <Key>
@@ -316,6 +317,7 @@
           <NavigationProperty Name="QuestionSet" Relationship="ErgoQuizModel.FK_Game_QuestionSet" FromRole="Game" ToRole="QuestionSet" />
           <NavigationProperty Name="GameLog" Relationship="ErgoQuizModel.FK_GameLog_Game" FromRole="Game" ToRole="GameLog" />
           <NavigationProperty Name="Session" Relationship="ErgoQuizModel.FK_Session_Game" FromRole="Game" ToRole="Session" />
+          <Property Name="ConsecutiveScore" Type="Int32" />
         </EntityType>
         <EntityType Name="GameLog">
           <Key>
@@ -510,6 +512,7 @@
           <EntitySetMapping Name="Game">
             <EntityTypeMapping TypeName="ErgoQuizModel.Game">
               <MappingFragment StoreEntitySet="Game">
+                <ScalarProperty Name="ConsecutiveScore" ColumnName="ConsecutiveScore" />
                 <ScalarProperty Name="MostRecentEndedQuestionID" ColumnName="MostRecentEndedQuestionID" />
                 <ScalarProperty Name="MaxConsecutiveScore" ColumnName="MaxConsecutiveScore" />
                 <ScalarProperty Name="TotalScore" ColumnName="TotalScore" />

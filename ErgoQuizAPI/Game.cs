@@ -31,6 +31,7 @@ namespace ErgoQuizAPI
         public Nullable<int> TotalScore { get; set; }
         public Nullable<int> MaxConsecutiveScore { get; set; }
         public Nullable<int> MostRecentEndedQuestionID { get; set; }
+        public Nullable<int> ConsecutiveScore { get; set; }
     
         public virtual Player Player { get; set; }
         public virtual QuestionSet QuestionSet { get; set; }
