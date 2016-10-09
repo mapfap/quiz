@@ -13,7 +13,7 @@ namespace ErgoQuizAPI.Helper
             Player player;
             using (var db = new ErgoQuizEntities())
             {
-                player = db.Player.First(p => p.LanId == playerLanID);
+                player = db.Player.FirstOrDefault(p => p.LanId == playerLanID);
                 if (player == null)
                 {
                     player = new Player()
@@ -27,21 +27,21 @@ namespace ErgoQuizAPI.Helper
             return player;
         }
 
-        public Game ResumeGame(Player player, int QuestionSetID, ref bool isNewGame)
+        public Game ResumeGame(Player player, int questionSetID, ref bool isNewGame)
         {
             Game game;
             using (var db = new ErgoQuizEntities())
             {
-                game = db.Game.First(g => g.PlayerID == player.PlayerID && g.QuestionSetID == QuestionSetID);
+                game = db.Game.FirstOrDefault(g => g.PlayerID == player.PlayerID && g.QuestionSetID == questionSetID);
                 if (game == null)
                 {
-                    string sequence = GenerateGameSequence();
+                    string sequence = GenerateGameSequence(questionSetID);
                     int firstQuestionID = Int32.Parse(sequence.Split(',')[0]);
 
                     game = new Game()
                     {
                         PlayerID = player.PlayerID,
-                        QuestionSetID = QuestionSetID,
+                        QuestionSetID = questionSetID,
                         IsGameEnded = false,
                         TotalTimeUsed = 0,
                         ActualTimeUsed = 0,
@@ -58,14 +58,26 @@ namespace ErgoQuizAPI.Helper
             return game;
         }
 
-        private string GenerateGameSequence()
+        private string GenerateGameSequence(int questionSetID)
         {
-            return "";
+            using(var db = new ErgoQuizEntities())
+            {
+                List<Int32> allQuestion = new List<Int32>();
+                foreach(var question in db.Question.Where(q => q.QuestionSetID == questionSetID))
+                {
+                    allQuestion.Add(question.QuestionID);
+                }
+                
+                var rnd = new Random();
+                var sequence = allQuestion.OrderBy(item => rnd.Next());
+                var output = String.Join(",", sequence);
+                return output;
+            }
         }
 
         private int determineNextQuestionID(Game game)
         {
-            int currentQuestionID = (int) game.MostRecentEndedQuestionID;
+            int currentQuestionID = (int)game.MostRecentEndedQuestionID;
             string[] sequence = game.GameSequence.Split(',');
 
             // Current is 0, This is the new game, return first question
@@ -86,7 +98,7 @@ namespace ErgoQuizAPI.Helper
                     }
                     else
                     {
-                        return Int32.Parse(sequence[i+1]);
+                        return Int32.Parse(sequence[i + 1]);
                     }
                 }
             }
@@ -94,6 +106,14 @@ namespace ErgoQuizAPI.Helper
             // TODO: Code must not be reached !! how come MostRecent be a question not exist in sequence
             // just end the game
             return 0;
+        }
+
+        public Question GetQuestion(Session session)
+        {
+            using (var db = new ErgoQuizEntities())
+            {
+                return db.Question.Find(session.QuestionID);
+            }
         }
 
         public void EndTheGame(Game game)
@@ -117,7 +137,7 @@ namespace ErgoQuizAPI.Helper
             using (var db = new ErgoQuizEntities())
             {
                 // Find an open session.
-                session = db.Session.First(s => s.GameID == game.GameID && s.IsAnsered == false && s.IsSkipped == false);
+                session = db.Session.FirstOrDefault(s => s.GameID == game.GameID && s.IsAnsered == false && s.IsSkipped == false);
 
                 // User try to retrieved question without answered the old one.
                 // Skip the old one first
@@ -128,12 +148,12 @@ namespace ErgoQuizAPI.Helper
                     db.Session.Attach(session);
                     db.Entry(session).Property(s => s.IsSkipped).IsModified = true;
                     db.Entry(session).Property(s => s.SkippedAt).IsModified = true;
-                    
+
                     game.MostRecentEndedQuestionID = session.QuestionID;
                     db.Game.Attach(game);
                     db.Entry(game).Property(g => g.MostRecentEndedQuestionID).IsModified = true;
                     db.SaveChanges();
-                    
+
                 }
             }
             session = null;
@@ -170,7 +190,7 @@ namespace ErgoQuizAPI.Helper
 
                 IsSkipped = false
                 //SkippedAt = "N/A"
-                
+
             };
 
             using (var db = new ErgoQuizEntities())
@@ -182,38 +202,68 @@ namespace ErgoQuizAPI.Helper
             return newCreatedSession;
         }
 
-        public bool evaluate(Session session, int answer, long timeLeft)
+        public bool Evaluate(Session session, int answer, long timeLeft)
         {
-            
-
             DateTime answerAt = DateTime.UtcNow;
 
-            TimeSpan totalTimeUsed = (answerAt - (DateTime)session.AskAt);
-            long TotalMsUsed = (long)totalTimeUsed.TotalMilliseconds;
-           
+            // Server time diff for waiting answer
+            TimeSpan actualTimeUsed = (answerAt - (DateTime)session.AskAt);
+            long actualMsUsed = (long)actualTimeUsed.TotalMilliseconds;
+
+            // Time reported by user
+            long totalMsUsed = (long)session.TimeLeftBeforeAsk - timeLeft;
+
             int key = (int)session.Question.Answer;
             bool isCorrect = key == answer;
 
-            session.Answer = answer;
-            session.IsAnsered = true;
-            session.isCorrect = isCorrect;
-            session.TimeLeftAfterAnswer = timeLeft;
-            session.AnswerAt = answerAt;
-            session.TotalTimeUsed = (long)session.TimeLeftBeforeAsk - timeLeft;
-            session.ActualTimeUsed = TotalMsUsed;
+            using (var db = new ErgoQuizEntities())
+            {
+                session.Answer = answer;
+                session.IsAnsered = true;
+                session.isCorrect = isCorrect;
+                session.TimeLeftAfterAnswer = timeLeft;
+                session.AnswerAt = answerAt;
+                session.TotalTimeUsed = totalMsUsed;
+                session.ActualTimeUsed = actualMsUsed;
+                db.Session.Attach(session);
+                db.Entry(session).Property(s => s.Answer).IsModified = true;
+                db.Entry(session).Property(s => s.IsAnsered).IsModified = true;
+                db.Entry(session).Property(s => s.isCorrect).IsModified = true;
+                db.Entry(session).Property(s => s.TimeLeftAfterAnswer).IsModified = true;
+                db.Entry(session).Property(s => s.AnswerAt).IsModified = true;
+                db.Entry(session).Property(s => s.TotalTimeUsed).IsModified = true;
+                db.Entry(session).Property(s => s.ActualTimeUsed).IsModified = true;
+                db.SaveChanges();
+            }
 
+            using (var db = new ErgoQuizEntities())
+            {
+                Game game = db.Game.FirstOrDefault(g => g.GameID == session.GameID);
+                game.MostRecentEndedQuestionID = session.QuestionID;
+                game.TotalTimeUsed += totalMsUsed;
+                game.ActualTimeUsed += actualMsUsed;
+                if (isCorrect)
+                {
+                    game.TotalScore += 1;
+                    game.MaxConsecutiveScore += 1;
+                }
+                else
+                {
+                    game.TotalScore += 0;
+                    game.MaxConsecutiveScore = 0;
+                }
 
-            game.MostRecentEndedQuestionID = session.QuestionID;
-            db.Game.Attach(game);
-            db.Entry(game).Property(g => g.MostRecentEndedQuestionID).IsModified = true;
-            db.SaveChanges();
+                db.Game.Attach(game);
 
-            Game game = session.Game;
-            game.TotalTimeUsed
-            game.ActualTimeUsed
-            gameTotalScore
-            game.MaxConsecutiveScore
-          
+                db.Entry(game).Property(g => g.MostRecentEndedQuestionID).IsModified = true;
+                db.Entry(game).Property(g => g.TotalTimeUsed).IsModified = true;
+                db.Entry(game).Property(g => g.ActualTimeUsed).IsModified = true;
+                db.Entry(game).Property(g => g.TotalScore).IsModified = true;
+                db.Entry(game).Property(g => g.MaxConsecutiveScore).IsModified = true;
+
+                db.SaveChanges();
+            }
+
             return isCorrect;
         }
 
@@ -223,10 +273,11 @@ namespace ErgoQuizAPI.Helper
             using (var db = new ErgoQuizEntities())
             {
                 // Find an open session.
-                session = db.Session.First(s => s.GameID == game.GameID && s.IsAnsered == false && s.IsSkipped == false);
-                
+                session = db.Session.FirstOrDefault(s => s.GameID == game.GameID && s.IsAnsered == false && s.IsSkipped == false);
+
             }
 
             return session;
         }
     }
+}

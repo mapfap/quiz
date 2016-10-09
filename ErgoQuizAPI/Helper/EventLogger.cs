@@ -17,6 +17,8 @@ namespace ErgoQuizAPI.Helper
                     Value = value,
                     At = DateTime.UtcNow
                 });
+
+                db.SaveChanges();
             }
         }
     }

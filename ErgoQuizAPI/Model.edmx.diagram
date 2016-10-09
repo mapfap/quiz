@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="7626c5e53ccc494291eace258eb301d7" Name="Diagram1" ZoomLevel="60">
+      <Diagram DiagramId="7626c5e53ccc494291eace258eb301d7" Name="Diagram1" ZoomLevel="146">
         <EntityTypeShape EntityType="ErgoQuizModel.Event" Width="1.5" PointX="5" PointY="0.875" />
         <EntityTypeShape EntityType="ErgoQuizModel.EventType" Width="1.5" PointX="2.75" PointY="1.125" />
         <EntityTypeShape EntityType="ErgoQuizModel.Game" Width="1.5" PointX="3" PointY="5.375" />
