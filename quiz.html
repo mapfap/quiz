@@ -18,81 +18,76 @@
 		<div ng-app="myApp" ng-controller="myCtrl" class="panel noselect">
 
 			<div class="hud">
-				<div class="hud-child">SWONGT2</div>
-				<div class="hud-child">30</div>
-				<div class="hud-child">30</div>
-				<div class="hud-child">10.651150s</div>
-			</div>
-
-			<div class="question">
-				<div class="title">Which is the best definition of the word "apopletic"?</div>
-				<img class="picture" src="img/stretching-1.jpg"/>
-				<div class="choice-panel">
-					<button class="choice">Preaching</button>
-					<button class="choice">Furious</button>
-					<button class="choice">Incapacitated</button>
-					<button class="choice">Cold</button>
-				</div>
-			</div>
-
-			<i class="fa fa-smile-o green" aria-hidden="true"></i>
-			<div class="result result-green">CORRECT</div>
-
-			<i class="fa fa-frown-o red" aria-hidden="true"></i>
-			<div class="result result-red">INCORRECT</div>
-
-			<i class="fa fa-play i-small" aria-hidden="true"></i>
-			<div class="result">Next Question</div>
-
-
-			<div ng-if="layout != EMPTY && layout != ERROR && layout != SCOREBOARD && layout != GAMEOVER" class="stopwatch-panel">
-				 Time Left (s): {{ calculateTimeLeft()/1000.0 }}
-
+				<i ng-if="layout != QUESTION && layout != EMPTY" class="fa fa-check-circle saved" aria-hidden="true"></i>
+				<div class="hud-child">{{ getHUDPlayer() }}</div>
+				<div class="hud-child">{{ getHUDScore() }}</div>
+				<div class="hud-child">{{ getHUDConScore() }}</div>
+				<div class="hud-child">{{ getHUDTimeLeft() }}s</div>
 			</div>
 
 			<div ng-if="layout == EMPTY">
-				Loading..
+				<div class="loading-panel">
+					<img src="img/pacman.gif" class="loading"><br />
+					Loading...
+				</div>
 			</div>
 
 			<div ng-if="layout == GREETING || layout == WELCOME_BACK">
-				<div ng-if="layout == GREETING">Hello, </div>
-				<div ng-if="layout == WELCOME_BACK">Welcome back, </div>
-				{{ timeLeft }} milliseconds left.
-				<button ng-click="play()">play</button>
+				<div class="rule-panel">
+					<div ng-if="layout == GREETING">Hello !</div>
+					<div ng-if="layout == WELCOME_BACK">Welcome back !</div>
+					You have 1:30 minutes to answer the questions.<br />
+					This icon (<i class="fa fa-check-circle sample-saved" aria-hidden="true"></i>) indicates that you are safe to close this webpage, <br />
+					and resume the game later any time before <br /> November 30, 2016 23:59:59 BKK Time.<br />
+					<br />
+				</div>
+				<button ng-click="play()" class="start-button"> Ready </button>
 			</div>
 
 			<div ng-if="layout == QUESTION">
-				 {{ question.Title }}
-				 {{ question.Picture }}
-				 <button ng-click="answer(1)">{{ question.Choice1 }}</button>
-				 <button ng-click="answer(2)">{{ question.Choice2 }}</button>
-				 <button ng-click="answer(3)">{{ question.Choice3 }}</button>
-				 <button ng-click="answer(4)">{{ question.Choice4 }}</button>
+				<div class="question">
+					<div class="title">{{ question.TITLE }}</div>
+					<img ng-if="question.Picture" class="picture" src="{{ question.Picture }}"/>
+					<div class="choice-panel">
+						<button class="choice">{{ question.Choice1 }}</button>
+					<button class="choice">{{ question.Choice2 }}</button>
+					<button class="choice">{{ question.Choice3 }}</button>
+					<button class="choice">{{ question.Choice4 }}</button>
+					</div>
+				</div>
 			</div>
 
 			<div ng-if="layout == CORRECT">
-				CORRECT !
-				<button ng-click="play()">next</button>
+				<i class="fa fa-smile-o green face" aria-hidden="true"></i>
+				<div class="result result-green">CORRECT</div>
+
+				<button ng-click="play()" class="next-button"> Next Question </button>
 			</div>
 
 			<div ng-if="layout == INCORRECT">
-				INCORRECT !
-				<button ng-click="play()">next</button>
+				<i class="fa fa-frown-o red face" aria-hidden="true"></i>
+				<div class="result result-red">INCORRECT</div>
+
+				<button ng-click="play()" class="next-button"> Next Question </button>
 			</div>
 
 			<div ng-if="layout == GAMEOVER">
-				GAME OVER !
-				Thanks for playing.
-				<button>Scoreboard</button>
+				You have completed the game.
+				Thank you for your participations.
+				<button>Back to mainmenu</button>
 			</div>
 
 			<div ng-if="layout == SCOREBOARD">
-				Your score
+				You have completed the game.
+				Score: {{ 0 }} Pts.
+				Max consecutive corrects: {{ 0 }} Questions.
 			</div>
 
 			<div ng-if="layout == ERROR">
-				Something went wrong.. Please try again later.
-				{{ errorMessage }}
+				<center>
+					<i class="fa fa-exclamation-circle error" aria-hidden="true"></i>
+					<div class="error-message">{{ errorMessage }}</div>
+				</center>
 			</div>
 
 		</div>

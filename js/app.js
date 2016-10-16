@@ -6,13 +6,13 @@ app.controller('myCtrl', function($scope, $http, $interval) {
 
   $scope.EMPTY = "EMPTY";
   $scope.GREETING = "GREETING";
-      $scope.WELCOME_BACK = "WELCOME_BACK";
-      $scope.SCOREBOARD = "SCOREBOARD";
-      $scope.QUESTION = "QUESTION";
-      $scope.GAMEOVER = "GAMEOVER";
-      $scope.CORRECT = "CORRECT";
-      $scope.INCORRECT = "INCORRECT";
-      $scope.ERROR = "ERROR";
+  $scope.WELCOME_BACK = "WELCOME_BACK";
+  $scope.SCOREBOARD = "SCOREBOARD";
+  $scope.QUESTION = "QUESTION";
+  $scope.GAMEOVER = "GAMEOVER";
+  $scope.CORRECT = "CORRECT";
+  $scope.INCORRECT = "INCORRECT";
+  $scope.ERROR = "ERROR";
 
   $scope.layout = $scope.EMPTY;
   $scope.score = 0;
@@ -53,9 +53,6 @@ app.controller('myCtrl', function($scope, $http, $interval) {
         $scope.question = response;
         $scope.layout = $scope.QUESTION;
         $scope.startWatch();
-      // } else if(response.ResponseCode == $scope.WELCOME_BACK) {
-      // 	$scope.timeLeft = response.TimeLeft;
-      // 	$scope.layout = $scope.WELCOME_BACK;
        } else {
         $scope.errorMessage = response.Message
         $scope.layout = $scope.ERROR;
@@ -131,6 +128,35 @@ app.controller('myCtrl', function($scope, $http, $interval) {
         return 0;
       }
       return left;
+    };
+
+    $scope.isHUDActive = function() {
+      return $scope.layout == $scope.QUESTION || $scope.layout == $scope.CORRECT || $scope.layout == $scope.INCORRECT;
+    }
+
+    $scope.getHUDTimeLeft = function() {
+      if ($scope.isHUDActive()) {
+        return $scope.calculateTimeLeft();
+      }
+      return "---.------";
+    };
+
+    $scope.getHUDScore = function() {
+      if ($scope.isHUDActive()) {
+        return $scope.score;
+      }
+      return "-";
+    };
+
+    $scope.getHUDConScore = function() {
+      if ($scope.isHUDActive()) {
+        return $scope.maxConsecutive;
+      }
+      return "-";
+    };
+
+    $scope.getHUDPlayer = function() {
+      return "SWONGT2";
     };
 
 });

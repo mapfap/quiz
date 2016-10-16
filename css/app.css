@@ -1,12 +1,17 @@
 body {
   font-family: 'camptonbold';
-  background: #F2F3D9;
+  background-color: #F2F3D9;
   color: #030027;
   font-size: 10px;
 }
 
 div {
   cursor: default;
+}
+
+button {
+  outline: none;
+  cursor: pointer;
 }
 
 .heading {
@@ -65,6 +70,38 @@ div {
   /*border: 2px solid #030027;*/
 }
 
+.rule-panel {
+  line-height: 2em;
+  position: absolute;
+  top: 26%;
+  left: 6%;
+
+  font-size: 2.4em;
+  color: #151E3F;
+  margin-left: 20px;
+  margin-left: 50px;
+}
+
+.start-button {
+  font-family: inherit;
+  position: absolute;
+  top: 74%;
+  left: 35%;
+
+  background: none;
+  border: none;
+  font-size: 8em;
+  border-left: 5px solid #151E3F;
+  border-right: 5px solid #151E3F;
+  transition: 0.1s ease;
+  color: #151E3F;
+}
+
+.start-button:hover {
+  background: #151E3F;
+  color: #F2F3D9;
+}
+
 .credit {
   position: fixed;
   bottom: 10px;
@@ -94,11 +131,10 @@ div {
   border: 3px solid #151E3F;
   font-size: 2.8em;
   background: #F2F3D9;
-  font-family: 'camptonbold';
+  font-family: inherit;;
   color: #151E3F;
   display: block;
   margin: 10px;
-  cursor: pointer;
   transition: 0.1s ease;
 }
 
@@ -121,6 +157,13 @@ i {
   padding-left: 20px;
   padding-right: 20px;
   border-radius: 200px;
+  z-index: 5 !important;
+}
+
+.face {
+  position: absolute;
+  top: 10%;
+  left: 35%;
 }
 
 .i-small {
@@ -139,14 +182,80 @@ i.green {
 
 .result {
   font-size: 5.5em;
+  position: absolute;
+  top: 65%;
+  left: 35%;
+}
+
+.next-button {
+  font-family: inherit;
+  position: absolute;
+  top: 80%;
+  left: 39%;
+
+  background: none;
+  border: none;
+  font-size: 2em;
+  border-left: 5px solid #151E3F;
+  border-right: 5px solid #151E3F;
+  transition: 0.1s ease;
+  color: #151E3F;
+}
+
+.next-button:hover {
+  background: #151E3F;
+  color: #F2F3D9;
 }
 
 .result-green {
-  color: #7AC16E ;
+  color: #7AC16E;
+  font-size: 5em;
 }
 
 .result-red {
   color: #C16E70;
+  font-size: 4.2em;
+}
+
+.error {
+  background: none;
+  color: #C16E70;
+  border-radius: 5px;
+  margin-top: 10%;
+}
+
+.error-message {
+  font-size: 2em;
+  color: #C16E70;
+}
+
+.loading-panel {
+  position: absolute;
+  top:39%;
+  left: 42%;
+  font-size: 2.5em;
+  z-index: 10;
+  text-align: center;
+}
+
+.loading {
+  width: 80px;
+  z-index: 10;
+}
+
+.saved {
+  display: inline-block;
+  color: #7AC16E;
+  font-size: 3em !important;
+  vertical-align: center;
+}
+
+.sample-saved {
+  display: inline-block;
+  color: #7AC16E;
+  font-size: 1em !important;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 .noselect {
