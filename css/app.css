@@ -1,0 +1,169 @@
+body {
+  font-family: 'camptonbold';
+  background: #F2F3D9;
+  color: #030027;
+  font-size: 10px;
+}
+
+div {
+  cursor: default;
+}
+
+.heading {
+  width: 70%;
+  height: 10%;
+  position: absolute;
+  top: 10%;
+  left: 15%;
+}
+
+.high-text {
+  color:#F2F3D9;
+  background: #030027;
+  font-size: 5em;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.text-small {
+  font-size: 3em;
+}
+
+.norm-text {
+  color:#DC9E82;
+  font-size: 2em;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.panel {
+  width: 70%;
+  height: 60%;
+  position: absolute;
+  top: 20%;
+  left: 15%;
+
+  border: 2px solid #030027;
+}
+
+.hud {
+  position: absolute;
+  top: 0%;
+  right: 0%;
+  display: inline-block;
+  padding: 10px;
+}
+
+.hud-child {
+  font-size: 2.5em;
+  display: inline-block;
+  background: #151E3F;
+  color: #F2F3D9;
+  padding: 5px;
+  /*border: 2px solid #030027;*/
+}
+
+.credit {
+  position: fixed;
+  bottom: 10px;
+  left: 43%;
+  font-size: 1em;
+  cursor: auto;
+}
+
+.question .title {
+  position: absolute;
+  top: 15%;
+  left: 10%;
+  font-size: 2.8em;
+  border-top: 1px solid #151E3F;
+  border-bottom: 1px solid #151E3F;
+  color: #151E3F;
+  padding: 5px;
+}
+
+.choice-panel {
+  position: absolute;
+  top: 30%;
+  left: 10%;
+}
+
+.choice {
+  border: 3px solid #151E3F;
+  font-size: 2.8em;
+  background: #F2F3D9;
+  font-family: 'camptonbold';
+  color: #151E3F;
+  display: block;
+  margin: 10px;
+  cursor: pointer;
+  transition: 0.1s ease;
+}
+
+.choice:hover {
+  color: #F2F3D9;
+  background: #151E3F;
+}
+
+.picture {
+  position: absolute;
+  right: 3%;
+  bottom: 5%;
+  z-index: -10;
+  width: 40%;
+  max-height: 80%;
+}
+
+i {
+  font-size: 25em !important;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 200px;
+}
+
+.i-small {
+  font-size: 5em !important;
+}
+
+i.red {
+  color: #030027;
+  background-color: #C16E70;
+}
+
+i.green {
+  color: #030027;
+  background-color: #7AC16E;
+}
+
+.result {
+  font-size: 5.5em;
+}
+
+.result-green {
+  color: #7AC16E ;
+}
+
+.result-red {
+  color: #C16E70;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently
+                                  not supported by any browser */
+}
+
+ /*
+#151E3F
+#030027 DARK BLUE
+#F2F3D9 CREAM
+#DC9E82 LIGHT ORANGE
+#C16E70 PINK
+#7AC16E GREEN
+ */
